@@ -47,7 +47,11 @@ class Receiver:
 
 
     def recv(self):
-        return self.socket.recv(netconfig.package_size)
+        header = self.socket.recv(netconfig.package_data_size)
+
+        data_size = int.from_bytes(header, "little")
+
+        return self.socket.recv(data_size)
         
 
     def receive(self):
