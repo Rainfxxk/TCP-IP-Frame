@@ -1,5 +1,5 @@
 import  socket
-
+from message import *
 import netconfig
 
 
@@ -37,10 +37,10 @@ class Sender():
 
         # 定义一个数据包大小为 848 bytes
 
-        if total_length % netconfig.package_size:
-            package_num = total_length // netconfig.package_size + 1
+        if total_length % netconfig.package_data:
+            package_num = total_length // netconfig.package_data + 1
         else:
-            package_num = total_length  // netconfig.package_size - 1 + 2
+            package_num = total_length  // netconfig.package_data - 1 + 2
 
         # 如果一个数据包可以直接发送，则不需要切片
         if package_num == 1:
@@ -48,20 +48,18 @@ class Sender():
         else:
             # 向接收端发送包的数量
             begin=f'package num:{package_num}'
-            self.send(begin.encode('utf-8'))
+            self.send(Package(begin).complete_mes())
 
             offset = 0
             while offset < total_length:
-                chunk = message[offset :offset + (netconfig.package_size - 1)]
-
-                self.send(chunk)
-
+                chunk = message[offset :offset + (netconfig.package_data - 1)]
+                self.send(Package(chunk).complete_mes())
                 offset += len(chunk)
 
             # 向接收端发送结束消息
             end =f'finish!'
             print(end)
-            self.send(end.encode(netconfig.charset))
+            self.send(Package(end).complete_mes())
 
             # 核实接收端的确认消息
             confirm_message = self.recv()
