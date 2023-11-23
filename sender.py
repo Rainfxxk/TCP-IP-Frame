@@ -1,5 +1,5 @@
 import  socket
-from message import *
+from package import *
 import netconfig
 
 
@@ -32,34 +32,34 @@ class Sender():
     '''
     836数据内容 12消息头
     '''
-    def send(self, message):
+    def send_message(self, message):
         total_length = len(message)
 
         # 定义一个数据包大小为 848 bytes
 
-        if total_length % netconfig.package_data:
-            package_num = total_length // netconfig.package_data + 1
+        if total_length % netconfig.package_data_size:
+            package_num = total_length // netconfig.package_data_size + 1
         else:
-            package_num = total_length  // netconfig.package_data - 1 + 2
+            package_num = total_length  // netconfig.package_data_size - 1 + 2
 
         # 如果一个数据包可以直接发送，则不需要切片
         if package_num == 1:
-            self.writeline(message)
+            self.send(Package(message).get_package())
         else:
             # 向接收端发送包的数量
             begin=f'package num:{package_num}'
-            self.send(Package(begin).complete_mes())
+            self.send(Package(begin.encode(netconfig.charset)).get_package())
 
             offset = 0
             while offset < total_length:
-                chunk = message[offset :offset + (netconfig.package_data - 1)]
-                self.send(Package(chunk).complete_mes())
+                chunk = message[offset :offset + (netconfig.package_data_size - 1)]
+                self.send(Package(chunk).get_package())
                 offset += len(chunk)
 
             # 向接收端发送结束消息
             end =f'finish!'
             print(end)
-            self.send(Package(end).complete_mes())
+            self.send(Package(end.encode(netconfig.charset)).get_package())
 
             # 核实接收端的确认消息
             confirm_message = self.recv()

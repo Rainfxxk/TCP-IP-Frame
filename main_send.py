@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     messages = []
 
-    image_file = open("./test/1.tif", "rb")
+    image_file = open("./1.tif", "rb")
 
     image = image_file.read()
 
@@ -26,4 +26,3 @@ if __name__ == "__main__":
 
     for i in range(len(messages)):
         message_queue.add(message=messages[i])
-        sleep(9)

@@ -23,7 +23,7 @@ class Receiver:
         # 获取指令的类型及内容
         if index == -1:
             command_type = None
-            command = message[0:-1]
+            command = message
         else:
             command_type = message[0:index]
             command_type = command_type.decode(netconfig.charset)
@@ -47,9 +47,10 @@ class Receiver:
 
 
     def recv(self):
-        header = self.socket.recv(netconfig.package_data_size)
+        header = self.socket.recv(netconfig.package_header_size)
 
         data_size = int.from_bytes(header, "little")
+        print(data_size)
 
         return self.socket.recv(data_size)
         

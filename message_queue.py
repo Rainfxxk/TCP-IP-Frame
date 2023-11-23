@@ -21,7 +21,7 @@ class MassageQueue():
 
                 message = self.message_queue.popleft()
 
-                self.sender.send(message)
+                self.sender.send_message(message)
 
 
     def listen(self):
